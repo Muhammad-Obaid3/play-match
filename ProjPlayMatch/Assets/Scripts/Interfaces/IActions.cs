@@ -6,7 +6,6 @@ namespace PlayMatch
         void OnCardClicked();
         void FlipBack();
         void DeactivateCard();
-        void ActivateCard();
     }
 }
 
