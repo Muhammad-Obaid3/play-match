@@ -7,6 +7,12 @@ namespace PlayMatch
 {
     public class Utility
     {
+
+        public static void SetActive(GameObject go, bool state)
+        {
+            go.SetActive(state);
+        }
+
         public static void SaveGame(GameData gameData)
         {
             string json = JsonUtility.ToJson(gameData);

@@ -3,7 +3,7 @@ namespace PlayMatch
 {
     public interface ISounds
     {
-        void PlaySound();
+        void PlaySound(string clip);
         void StopSound();
     }
 }
