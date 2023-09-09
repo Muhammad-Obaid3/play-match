@@ -5,13 +5,13 @@ namespace PlayMatch
     [Serializable]
     public class GameData
     {
-        public bool[] CardStates { get; set; }
-        public int Score { get; set; }
+        public bool[] cardStates { get; set; }
+        public int score { get; set; }
 
         public GameData(bool[] cardStates, int score)
         {
-            this.CardStates = cardStates;
-            this.Score = score;
+            this.cardStates = cardStates;
+            this.score = score;
         }
     }
 }

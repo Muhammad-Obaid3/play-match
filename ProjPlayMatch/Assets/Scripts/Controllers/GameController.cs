@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using PlayMatch;
 
-public class GameController : MonoBehaviour, IActionables
+public class GameController : MonoBehaviour, IActionables, IAnimations
 {
     //Lists
     private List<Card> flippedCards = new List<Card>();
@@ -27,6 +27,14 @@ public class GameController : MonoBehaviour, IActionables
     public IEnumerator FlipCardsBack()
     {
         yield return new WaitForSeconds(0.0f);
+    }
+
+    public void PlayAnimation()
+    {
+    }
+
+    public void StopAnimation()
+    {
     }
 }
 
