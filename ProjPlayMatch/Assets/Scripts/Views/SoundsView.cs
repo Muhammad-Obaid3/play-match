@@ -7,6 +7,8 @@ public class SoundsView : MonoBehaviour, ISounds
 {
     //Actions
     public static Action<string> NotifyPlaySoundClip;
+    public static Action<bool> NotifySoundState;
+
     //Audiosource
     private AudioSource _audioSource;
 
@@ -16,15 +18,22 @@ public class SoundsView : MonoBehaviour, ISounds
     [SerializeField] private AudioClip _mismatchAudio;
     [SerializeField] private AudioClip _completedAudio;
 
+    //Variables
+    private bool _isSoundOn = true;
+
     private void Start()
     {
         _audioSource = GetComponent<AudioSource>();
         _audioSource.playOnAwake = false;
         NotifyPlaySoundClip += PlaySound;
+        NotifySoundState += OnSoundState;
     }
 
     public void PlaySound(string clip)
     {
+        if (_isSoundOn == false)
+            return;
+
         switch (clip)
         {
             case Constants.flipAudio:
@@ -50,13 +59,26 @@ public class SoundsView : MonoBehaviour, ISounds
         }
     }
 
-    public void StopSound()
+    private void OnSoundState(bool state)
     {
-
+        switch (state)
+        {
+            case true:
+                {
+                    _isSoundOn = true;
+                }
+                break;
+            case false:
+                {
+                    _isSoundOn = false;
+                }
+                break;
+        }
     }
 
     private void OnDisable()
     {
         NotifyPlaySoundClip -= PlaySound;
+        NotifySoundState -= OnSoundState;
     }
 }

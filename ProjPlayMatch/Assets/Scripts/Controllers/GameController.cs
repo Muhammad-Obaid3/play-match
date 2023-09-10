@@ -6,10 +6,11 @@ using System;
 using UnityEngine.UI;
 using TMPro;
 
-public class GameController : MonoBehaviour, IActionables, IAnimations
+public class GameController : MonoBehaviour, IActionables
 {
     //Actions
     public static Action<Card> NotifyCardFlipped;
+    public static Action<int, int> NotifyVariationSet;
 
     //Lists
     private List<Card> _flippedCards = new List<Card>();
@@ -23,21 +24,19 @@ public class GameController : MonoBehaviour, IActionables, IAnimations
     public GameObject _cardPrefab; // Prefab of the card object
 
     //Sprites
-    [Header("This must be equal to gridSize x gridSize")]
+    [Header("The size of this array must be equal to the maximum variation/gridSize")]
     public Sprite[] _cardImages; // Array of card images (front-facing)
 
     //Variables
-    [SerializeField] private int _gridSize = 0;
-    [SerializeField] private int _baseValue = 2;
-    [SerializeField] private int _variationMultiplier = 2;
+    [SerializeField] private bool _isVariationSet = false;
+    private int _gridSize = 0;
+    private int _baseValue = 0;
+    private int _variationMultiplier = 0;
     private int _score = 0;
     private int _currentCombo = 0;
     private int _highestCombo = 0;
-    private int _comboMultiplier = 1;
+    private int _comboMultiplier = 5;
     private int _matchedPairs = 0;
-    public bool _variationSelect = false;
-
-
 
     //Properties
     public bool CanFlip { get { return _flippedCards.Count < 2; } }
@@ -45,12 +44,19 @@ public class GameController : MonoBehaviour, IActionables, IAnimations
 
     private IEnumerator Start()
     {
-        yield return new WaitUntil(() => _variationSelect);
+        NotifyVariationSet += SetVariation;
+        yield return new WaitUntil(() => _isVariationSet);
         _gridSize = _baseValue * _variationMultiplier;
         InitializeGame();
         NotifyCardFlipped += OnCardFlipped;
     }
 
+    private void SetVariation(int baseValue, int variationMultiplier)
+    {
+        _baseValue = baseValue;
+        _variationMultiplier = variationMultiplier;
+        _isVariationSet = true;
+    }
 
     public void InitializeGame()
     {
@@ -140,12 +146,9 @@ public class GameController : MonoBehaviour, IActionables, IAnimations
                     _highestCombo = _currentCombo;
                 }
 
-                Debug.Log("_currentCombo" + _currentCombo);
-                Debug.Log("_highestCombo" + _highestCombo);
-
                 // Update the combo multiplier (customize this logic as needed)
                 //The combo multiplier increases every two consecutive matches,
-                //capped at a maximum value of 5(customize this logic as needed).
+                //capped at a maximum value of 5.
                 _comboMultiplier = Mathf.Min(_currentCombo / 2 + 1, 5);
                 _flippedCards.ForEach(cards => cards.DeactivateCard());
                 if (SoundsView.NotifyPlaySoundClip != null)
@@ -185,14 +188,6 @@ public class GameController : MonoBehaviour, IActionables, IAnimations
         }
 
         _flippedCards.Clear();
-    }
-
-    public void PlayAnimation()
-    {
-    }
-
-    public void StopAnimation()
-    {
     }
 
     private void OnDisable()

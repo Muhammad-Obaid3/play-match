@@ -15,6 +15,6 @@ namespace PlayMatch
         public const int loadingSceneIndex = 0;
         public const int gameSceneIndex = 1;
 
-
     }
+
 }
