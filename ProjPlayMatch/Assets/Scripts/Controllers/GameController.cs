@@ -27,19 +27,26 @@ public class GameController : MonoBehaviour, IActionables, IAnimations
     public Sprite[] _cardImages; // Array of card images (front-facing)
 
     //Variables
-    [SerializeField] private int _gridSize = 4;
+    [SerializeField] private int _gridSize = 0;
+    [SerializeField] private int _baseValue = 2;
+    [SerializeField] private int _variationMultiplier = 2;
     private int _score = 0;
     private int _currentCombo = 0;
     private int _highestCombo = 0;
     private int _comboMultiplier = 1;
     private int _matchedPairs = 0;
+    public bool _variationSelect = false;
+
+
 
     //Properties
     public bool CanFlip { get { return _flippedCards.Count < 2; } }
 
 
-    private void Start()
+    private IEnumerator Start()
     {
+        yield return new WaitUntil(() => _variationSelect);
+        _gridSize = _baseValue * _variationMultiplier;
         InitializeGame();
         NotifyCardFlipped += OnCardFlipped;
     }
@@ -49,28 +56,11 @@ public class GameController : MonoBehaviour, IActionables, IAnimations
     {
         try
         {
-            int totalPairs = _gridSize * _gridSize / 2;
-
-            // Create a list of card IDs in pairs
-            for (int i = 0; i < totalPairs; i++)
-            {
-                _shuffledIDs.Add(i);
-                _shuffledIDs.Add(i);
-            }
-
-            // Shuffle the card IDs randomly
-            for (int i = 0; i < _shuffledIDs.Count; i++)
-            {
-                int randomIndex = UnityEngine.Random.Range(i, _shuffledIDs.Count);
-                int temp = _shuffledIDs[i];
-                _shuffledIDs[i] = _shuffledIDs[randomIndex];
-                _shuffledIDs[randomIndex] = temp;
-            }
 
             // Shuffle the cards
-            //Shuffle(cards);
+            Shuffle();
 
-            for (int i = 0; i < _gridSize * _gridSize; i++)
+            for (int i = 0; i < _gridSize; i++)
             {
                 int cardIndex = i;
                 GameObject cardGO = Instantiate(_cardPrefab, _parentTransform);
@@ -86,7 +76,7 @@ public class GameController : MonoBehaviour, IActionables, IAnimations
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"{ex} <b> ::Resolution: Please add card images as gridSize x gridSize </b>");
+            Debug.LogError($"{ex} <b> ::Resolution: Please add card images as 2 x desired variation </b>");
         }
 
         // Temporarily flip all cards to reveal their faces
@@ -98,16 +88,25 @@ public class GameController : MonoBehaviour, IActionables, IAnimations
         // Delay for 1 second before flipping the cards back
         StartCoroutine(FlipAllCardsBack(_cards));
     }
-    void Shuffle(List<Card> cards)
+    void Shuffle()
     {
-        //int count = cards.Count;
-        //for (int i = 0; i < count; i++)
-        //{
-        //    int randomIndex = Random.Range(i, count);
-        //    Card temp = cards[i];
-        //    cards[i] = cards[randomIndex];
-        //    cards[randomIndex] = temp;
-        //}
+        int totalPairs = _gridSize / 2;
+
+        // Create a list of card IDs in pairs
+        for (int i = 0; i < totalPairs; i++)
+        {
+            _shuffledIDs.Add(i);
+            _shuffledIDs.Add(i);
+        }
+
+        // Shuffle the card IDs randomly
+        for (int i = 0; i < _shuffledIDs.Count; i++)
+        {
+            int randomIndex = UnityEngine.Random.Range(i, _shuffledIDs.Count);
+            int temp = _shuffledIDs[i];
+            _shuffledIDs[i] = _shuffledIDs[randomIndex];
+            _shuffledIDs[randomIndex] = temp;
+        }
 
     }
     public IEnumerator FlipAllCardsBack(List<Card> cards)
@@ -153,7 +152,7 @@ public class GameController : MonoBehaviour, IActionables, IAnimations
                     SoundsView.NotifyPlaySoundClip(Constants.matchedAudio);
                 _matchedPairs++;
 
-                if (_matchedPairs == _gridSize * _gridSize / 2)
+                if (_matchedPairs == _gridSize / 2)
                 {
                     if (GameView.NotifyCompleted != null)
                         GameView.NotifyCompleted();
