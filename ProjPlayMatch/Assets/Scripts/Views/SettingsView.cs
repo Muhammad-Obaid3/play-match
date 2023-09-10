@@ -53,6 +53,9 @@ public class SettingsView : MonoBehaviour, ISettings
                 }
                 break;
         }
+
+        MusicView.NotifyMusicState(_isMusic);
+
     }
 
     public void OnSound()
@@ -73,5 +76,6 @@ public class SettingsView : MonoBehaviour, ISettings
                 }
                 break;
         }
+        SoundsView.NotifySoundState(_isSound);
     }
 }

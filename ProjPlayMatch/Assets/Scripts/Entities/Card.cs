@@ -62,7 +62,7 @@ public class Card : MonoBehaviour, IActions
         _cardButton.onClick.AddListener(OnCardClicked);
     }
     public void SetCardText() => _cardIdText.text = _cardID.ToString();
-
+    private void SetCardTextState(bool state) => _cardIdText.enabled = state;
     public void OnCardClicked()
     {
         if (!_isFlipped && _gameController.CanFlip)
@@ -70,7 +70,7 @@ public class Card : MonoBehaviour, IActions
             // Flip the card
             _cardImage.sprite = _frontImage;
             _isFlipped = true;
-
+            SetCardTextState(true);
             // Notify the GameController that a card has been flipped
             if (GameController.NotifyCardFlipped != null)
                 GameController.NotifyCardFlipped(this);
@@ -85,6 +85,7 @@ public class Card : MonoBehaviour, IActions
         // Flip the card back to its initial state (back-facing)
         _cardImage.sprite = _backImage;
         _isFlipped = false;
+        SetCardTextState(false);
     }
 
     public async void DeactivateCard()
